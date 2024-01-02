@@ -1,2 +1,2 @@
 # DSA-II-Assignment-Solution
-L2-T1 Data Structure &amp; Algorithm Assignment Solution of BUET (Session 2021-22)
+Welcome to the DSA-II-Assignment-Solution Repository! This repository serves as a centralized space for storing solutions to all Data Structures and Algorithms (DSA) assignments of BUET DSA-II course(July 2023 Term). Whether you're a student looking for reference implementations, preparing for exams, or seeking collaborative learning opportunities, this repository aims to support your DSA journey.
