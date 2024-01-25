@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include "color.hpp"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ class MAP
 {
 private:
     Node<Key, Value> *Root;
+    int size;
 
     bool lr;  // left rotation
     bool rr;  // right rotation
@@ -220,8 +222,64 @@ private:
         if (node != NULL)
         {
             inorderTraversalHelper(node->left);
-            cout << node->key << " => " << node->value << endl;
+
+            if(node->color == 'R') {
+                cout << hue::red <<node->key << " => " << node->value << hue::reset << endl;
+            }
+
+            if(node->color == 'R') {
+                cout << node->key << " => " << node->value << endl;
+            }
+
             inorderTraversalHelper(node->right);
+        }
+    }
+
+    bool found(Node<Key, Value> *node, Key key)
+    {
+        if (node != NULL)
+        {
+            found(node->left , key);
+
+            if (node->key == key)
+            {
+                return true;
+            }
+
+            found(node->right , key);
+        }
+
+    }
+
+    void printTree(Node<Key, Value> *node)
+    {
+        if (node == NULL) {
+            return;
+        }
+
+        if(node->color == 'R') {
+            cout << hue::red << node->key << "_" << node->value << hue::reset;
+        }
+
+        if(node->color == 'B') {
+            cout << node->key << "_" << node->value ;
+        }
+
+        if (node->left || node->right)
+        {
+            cout << "(";
+
+            if (node->left) {
+                printTree(node->left);
+            }
+
+            cout << ",";
+
+            if (node->right) {
+                printTree(node->right);
+            }
+
+            cout << ")";
         }
     }
 
@@ -233,10 +291,12 @@ public:
         rr = false;
         lrr = false;
         rlr = false;
+        size = 0;
     }
 
     void insert(Key key, Value value)
     {
+        size++;
 
         if (Root == NULL)
         {
@@ -254,5 +314,24 @@ public:
     {
         inorderTraversalHelper(Root);
     }
-};
 
+    bool found(Key key)
+    {
+        return found(Root, key);
+    }
+
+    bool empty()
+    {
+        return size == 0;
+    }
+
+    int sizeofTree()
+    {
+        return size;
+    }
+
+    void printTree()
+    {
+        printTree(Root);
+    }
+};
