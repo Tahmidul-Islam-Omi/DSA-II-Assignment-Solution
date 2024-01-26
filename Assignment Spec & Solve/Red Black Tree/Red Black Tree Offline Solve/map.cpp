@@ -141,7 +141,7 @@ private:
             root->right->parent = root;
             root = rotateLeft(root);
             root->color = 'B';
-            root->right->color = 'R';
+            root->left->color = 'R';
             rlr = false;
         }
 
@@ -169,8 +169,8 @@ private:
 
                 else
                 {
-                    root->color = 'R';
-                    root->parent->left->color = 'R';
+                    root->color = 'B';
+                    root->parent->left->color = 'B';
 
                     if (root->parent != Root)
                     {
@@ -201,8 +201,8 @@ private:
 
                 else
                 {
-                    root->color = 'R';
-                    root->parent->right->color = 'R';
+                    root->color = 'B';
+                    root->parent->right->color = 'B';
 
                     if (root->parent != Root)
                     {
@@ -217,29 +217,13 @@ private:
         return root;
     }
 
-    void inorderTraversalHelper(Node<Key, Value> *node)
-    {
-        if (node != NULL)
-        {
-            inorderTraversalHelper(node->left);
-
-            if(node->color == 'R') {
-                cout << hue::red <<node->key << " => " << node->value << hue::reset << endl;
-            }
-
-            if(node->color == 'R') {
-                cout << node->key << " => " << node->value << endl;
-            }
-
-            inorderTraversalHelper(node->right);
-        }
-    }
-
     bool found(Node<Key, Value> *node, Key key)
     {
         if (node != NULL)
         {
             found(node->left , key);
+
+            cout << node->key << endl;
 
             if (node->key == key)
             {
@@ -251,38 +235,6 @@ private:
 
     }
 
-    void printTree(Node<Key, Value> *node)
-    {
-        if (node == NULL) {
-            return;
-        }
-
-        if(node->color == 'R') {
-            cout << hue::red << node->key << "_" << node->value << hue::reset;
-        }
-
-        if(node->color == 'B') {
-            cout << node->key << "_" << node->value ;
-        }
-
-        if (node->left || node->right)
-        {
-            cout << "(";
-
-            if (node->left) {
-                printTree(node->left);
-            }
-
-            cout << ",";
-
-            if (node->right) {
-                printTree(node->right);
-            }
-
-            cout << ")";
-        }
-    }
-
 public:
     MAP()
     {
@@ -292,6 +244,10 @@ public:
         lrr = false;
         rlr = false;
         size = 0;
+    }
+
+    Node<Key, Value>* getRoot() {
+        return Root;
     }
 
     void insert(Key key, Value value)
@@ -310,11 +266,6 @@ public:
         }
     }
 
-    void inorderTraversal()
-    {
-        inorderTraversalHelper(Root);
-    }
-
     bool found(Key key)
     {
         return found(Root, key);
@@ -330,8 +281,4 @@ public:
         return size;
     }
 
-    void printTree()
-    {
-        printTree(Root);
-    }
 };

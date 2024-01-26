@@ -1,97 +1,215 @@
 #include "map.cpp"
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+#include "color.hpp"
 using namespace std;
+
+template <typename Key, typename Value>
+
+void printTree(Node<Key, Value> *node , ofstream& outputFile)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+
+    if (node->color == 'R')
+    {
+        cout << hue::red << node->key << "_" << node->value << hue::reset;
+        outputFile << node->key << "_" << node->value;
+    }
+
+    if (node->color == 'B')
+    {
+        cout << node->key << "_" << node->value;
+        outputFile << node->key << "_" << node->value;
+    }
+
+    if (node->left || node->right)
+    {
+        cout << "(";
+        outputFile << "(";
+
+        if (node->left)
+        {
+            printTree(node->left , outputFile);
+        }
+
+        cout << ",";
+        outputFile << ",";
+
+        if (node->right)
+        {
+            printTree(node->right , outputFile);
+        }
+
+        cout << ")";
+        outputFile << ")";
+    }
+}
+
+template <typename Key, typename Value>
+
+void inorderTraversal(Node<Key, Value> *node , ofstream& outputFile)
+{
+    if (node != NULL)
+    {
+        inorderTraversal(node->left , outputFile);
+
+        if (node->color == 'R')
+        {
+            cout << hue::red << node->key << " => " << node->value << hue::reset << endl;
+            outputFile << node->key << " => " << node->value << endl;
+        }
+
+        if (node->color == 'B')
+        {
+            cout << node->key << " => " << node->value << endl;
+            outputFile << node->key << " => " << node->value << endl;
+        }
+
+        inorderTraversal(node->right , outputFile);
+    }
+}
 
 int main()
 {
 
-    MAP<int, string> mp;
-
     ifstream inputFile("input.txt");
+    ofstream outputFile("output.txt");
 
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         cerr << "Error opening the file!" << endl;
         return 1;
     }
 
+    if (!outputFile.is_open())
+    {
+        cerr << "Error opening the output file!" << endl;
+        return 1;
+    }
+
+    MAP<int, string> mp;
+
     string line;
 
-    int i=1;
+    int i = 1;
 
-    while (getline(inputFile, line)) {
-        cout << "Cmd " << i << ": "  ;
-        i++;
+    while (getline(inputFile, line))
+    {
         istringstream iss(line);
         string command;
         iss >> command;
 
-        if(command == "Clr") {
-            if(mp.empty()) {
+        outputFile << "Cmd " << i << ": " << command;
+        i++;
+
+        if (command == "Clr")
+        {
+            if (mp.empty())
+            {
                 cout << "unsuccessful" << endl;
+                outputFile << endl;
+                outputFile << "unsuccessful" << endl;
             }
 
-            else {
+            else
+            {
                 cout << "successful" << endl;
+                outputFile << endl;
+                outputFile << "successful" << endl;
                 MAP<int, string> mp;
             }
         }
 
-        if( command == "Em" ) {
-            if(mp.empty()) {
+        if (command == "Em")
+        {
+            if (mp.empty())
+            {
                 cout << "yes" << endl;
+                outputFile << endl;
+                outputFile << "yes" << endl;
             }
 
-            else {
+            else
+            {
                 cout << "no" << endl;
+                outputFile << endl;
+                outputFile << "no" << endl;
             }
         }
 
-        if(command == "S") {
+        if (command == "S")
+        {
             cout << mp.sizeofTree() << endl;
+            outputFile << endl;
+            outputFile << mp.sizeofTree() << endl;
         }
 
-        if(command == "Itr") {
-            mp.inorderTraversal();
+        if (command == "Itr")
+        {
+            outputFile << endl;
+            inorderTraversal(mp.getRoot() , outputFile);
         }
 
-        if(command == "F") {
+        if (command == "F")
+        {
 
             // Input Error
 
-            int key ;
-            //string value;
-            //iss >> key >> value;
+            int key;
+            // string value;
+            // iss >> key >> value;
             iss >> key;
 
+            outputFile << " " << key << endl;
 
-            if (mp.found(key)) {
-                cout << key << " " << "found" << endl;
+            cout << "Start" << endl;
+
+            if (mp.found(key))
+            {
+                cout << key << " "
+                     << "found" << endl;
+                outputFile << key << " "
+                           << "found" << endl;
             }
 
-            else {
-                cout << key << " " << "not found" << endl;
+            else
+            {
+                cout << key << " "
+                     << "not found" << endl;
+                outputFile << key << " "
+                           << "not found" << endl;
             }
 
+            cout << "End" << endl;
         }
 
-        if(command == "I") {
-            int key ;
+        if (command == "I")
+        {
+            int key;
             string value;
             iss >> key >> value;
+            outputFile << " " << key << " " << value << endl;
+
             mp.insert(key, value);
-            mp.printTree();
+            printTree(mp.getRoot() , outputFile);
             cout << endl;
+            outputFile << endl;
         }
 
-        if(command == "E") {
+        if (command == "E")
+        {
             int key;
             iss >> key;
             cout << endl;
         }
 
+        outputFile << endl;
     }
 
     inputFile.close();
+    outputFile.close();
 
     return 0;
 }
