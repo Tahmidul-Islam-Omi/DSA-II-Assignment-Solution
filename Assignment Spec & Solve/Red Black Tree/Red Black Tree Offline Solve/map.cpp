@@ -29,7 +29,7 @@ public:
     Node<Key, Value> * uncle()
     {
 
-        if (parent == NULL or parent->parent == NULL)
+        if (parent == NULL || parent->parent == NULL)
             return NULL;
 
         if (parent->isOnLeft())
@@ -81,8 +81,8 @@ public:
 
     bool hasRedChild()
     {
-        return (left != NULL and left->color == 'R') or
-               (right != NULL and right->color == 'R');
+        return (left != NULL && left->color == 'R') ||
+               (right != NULL && right->color == 'R');
     }
 };
 
@@ -431,7 +431,7 @@ private:
     {
         Node<Key, Value> *u = BSTreplace(v);
 
-        bool uvBlack = ((u == NULL or u->color == 'B') and (v->color == 'B'));
+        bool uvBlack = ((u == NULL || u->color == 'B') && (v->color == 'B'));
         Node<Key, Value> *parent = v->parent;
 
         if (u == NULL)
@@ -439,15 +439,16 @@ private:
 
             if (v == Root)
             {
-
                 Root = NULL;
             }
+
             else
             {
                 if (uvBlack)
                 {
                     fixDoubleBlack(v);
                 }
+
                 else
                 {
                     if (v->sibling() != NULL)
@@ -467,7 +468,7 @@ private:
             return;
         }
 
-        if (v->left == NULL or v->right == NULL)
+        if (v->left == NULL || v->right == NULL)
         {
 
             if (v == Root)
