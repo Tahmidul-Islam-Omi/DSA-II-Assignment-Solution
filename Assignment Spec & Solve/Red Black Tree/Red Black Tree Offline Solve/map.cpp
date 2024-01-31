@@ -25,6 +25,65 @@ public:
         this->right = NULL;
         this->parent = NULL;
     }
+
+    Node<Key, Value> * uncle()
+    {
+
+        if (parent == NULL or parent->parent == NULL)
+            return NULL;
+
+        if (parent->isOnLeft())
+        {
+            return parent->parent->right;
+        }
+        else
+        {
+            return parent->parent->left;
+        }
+    }
+
+    bool isOnLeft()
+    {
+        return this == parent->left;
+    }
+
+    Node<Key, Value> * sibling()
+    {
+        if (parent == NULL)
+        {
+            return NULL;
+        }
+
+        if (isOnLeft())
+        {
+            return parent->right;
+        }
+
+        return parent->left;
+    }
+
+    void moveDown(Node<Key, Value> * nParent)
+    {
+        if (parent != NULL)
+        {
+            if (isOnLeft())
+            {
+                parent->left = nParent;
+            }
+            else
+            {
+                parent->right = nParent;
+            }
+        }
+        nParent->parent = parent;
+        parent = nParent;
+    }
+
+    bool hasRedChild()
+    {
+        return (left != NULL and left->color == 'R') or
+               (right != NULL and right->color == 'R');
+    }
 };
 
 template <typename Key, typename Value>
@@ -217,22 +276,366 @@ private:
         return root;
     }
 
+    void leftRotate(Node<Key, Value> *node)
+    {
+        Node<Key, Value> *nParent = node->right;
+
+        if (node == Root)
+            Root = nParent;
+
+        node->moveDown(nParent);
+
+        node->right = nParent->left;
+
+        if (nParent->left != NULL)
+            nParent->left->parent = node;
+
+        nParent->left = node;
+    }
+
+    void rightRotate(Node<Key, Value> *node)
+    {
+        Node<Key, Value> *nParent = node->left;
+
+        if (node == Root)
+            Root = nParent;
+
+        node->moveDown(nParent);
+
+        node->left = nParent->right;
+
+        if (nParent->right != NULL)
+            nParent->right->parent = node;
+
+        nParent->right = node;
+    }
+
     bool found(Node<Key, Value> *node, Key key)
     {
         if (node != NULL)
         {
-            found(node->left , key);
-
-            cout << node->key << endl;
 
             if (node->key == key)
             {
                 return true;
             }
 
-            found(node->right , key);
+            return found(node->left, key) || found(node->right, key);
         }
 
+        return false;
+    }
+
+    void swapColors(Node<Key, Value> *node1, Node<Key, Value> *node2)
+    {
+        char temp;
+        temp = node1->color;
+        node1->color = node2->color;
+        node2->color = temp;
+    }
+
+    void swapValues(Node<Key, Value> *u, Node<Key, Value> *v)
+    {
+        Key temp;
+        Value temp1;
+
+        temp = u->key;
+        temp1 = u->value;
+
+        u->key = v->key;
+        u->value = v->value;
+
+        v->key = temp;
+        v->value = temp1;
+    }
+
+    void fixRedRed(Node<Key, Value> *node)
+    {
+        if (node == Root)
+        {
+            node->color = 'B';
+            return;
+        }
+
+        Node<Key, Value> *parent = node->parent, *grandparent = parent->parent,
+                         *uncle = node->uncle();
+
+        if (parent->color != 'B')
+        {
+            if (uncle != NULL && uncle->color == 'R')
+            {
+                parent->color = 'B';
+                uncle->color = 'B';
+                grandparent->color = 'R';
+                fixRedRed(grandparent);
+            }
+            else
+            {
+                if (parent->isOnLeft())
+                {
+                    if (node->isOnLeft())
+                    {
+                        swapColors(parent, grandparent);
+                    }
+                    else
+                    {
+                        leftRotate(parent);
+                        swapColors(node, grandparent);
+                    }
+                    rightRotate(grandparent);
+                }
+                else
+                {
+                    if (node->isOnLeft())
+                    {
+                        rightRotate(parent);
+                        swapColors(node, grandparent);
+                    }
+                    else
+                    {
+                        swapColors(parent, grandparent);
+                    }
+
+                    leftRotate(grandparent);
+                }
+            }
+        }
+    }
+
+    Node<Key, Value> *successor(Node<Key, Value> *node)
+    {
+        Node<Key, Value> *temp = node;
+
+        while (temp->left != NULL)
+            temp = temp->left;
+
+        return temp;
+    }
+
+    Node<Key, Value> *BSTreplace(Node<Key, Value> *node)
+    {
+
+        if (node->left != NULL and node->right != NULL)
+            return successor(node->right);
+
+        if (node->left == NULL and node->right == NULL)
+            return NULL;
+
+        if (node->left != NULL)
+            return node->left;
+        else
+            return node->right;
+    }
+
+    void deleteNode(Node<Key, Value> *v)
+    {
+        Node<Key, Value> *u = BSTreplace(v);
+
+        bool uvBlack = ((u == NULL or u->color == 'B') and (v->color == 'B'));
+        Node<Key, Value> *parent = v->parent;
+
+        if (u == NULL)
+        {
+
+            if (v == Root)
+            {
+
+                Root = NULL;
+            }
+            else
+            {
+                if (uvBlack)
+                {
+                    fixDoubleBlack(v);
+                }
+                else
+                {
+                    if (v->sibling() != NULL)
+                        v->sibling()->color = 'R';
+                }
+
+                if (v->isOnLeft())
+                {
+                    parent->left = NULL;
+                }
+                else
+                {
+                    parent->right = NULL;
+                }
+            }
+            delete v;
+            return;
+        }
+
+        if (v->left == NULL or v->right == NULL)
+        {
+
+            if (v == Root)
+            {
+
+                v->key = u->key;
+                v->value = u->value;
+
+                v->left = v->right = NULL;
+                delete u;
+            }
+            else
+            {
+
+                if (v->isOnLeft())
+                {
+                    parent->left = u;
+                }
+                else
+                {
+                    parent->right = u;
+                }
+                delete v;
+                u->parent = parent;
+                if (uvBlack)
+                {
+
+                    fixDoubleBlack(u);
+                }
+                else
+                {
+
+                    u->color = 'B';
+                }
+            }
+            return;
+        }
+
+        swapValues(u, v);
+        deleteNode(u);
+    }
+
+    void fixDoubleBlack(Node<Key, Value> *x)
+    {
+        if (x == Root)
+
+            return;
+
+        Node<Key, Value> *sibling = x->sibling(), *parent = x->parent;
+        if (sibling == NULL)
+        {
+
+            fixDoubleBlack(parent);
+        }
+        else
+        {
+            if (sibling->color == 'R')
+            {
+
+                parent->color = 'R';
+                sibling->color = 'B';
+                if (sibling->isOnLeft())
+                {
+                    // left case
+                    rightRotate(parent);
+                }
+                else
+                {
+                    // right case
+                    leftRotate(parent);
+                }
+                fixDoubleBlack(x);
+            }
+            else
+            {
+
+                if (sibling->hasRedChild())
+                {
+
+                    if (sibling->left != NULL and sibling->left->color == 'R')
+                    {
+                        if (sibling->isOnLeft())
+                        {
+                            // left left
+                            sibling->left->color = sibling->color;
+                            sibling->color = parent->color;
+                            rightRotate(parent);
+                        }
+                        else
+                        {
+                            // right left
+                            sibling->left->color = parent->color;
+                            rightRotate(sibling);
+                            leftRotate(parent);
+                        }
+                    }
+                    else
+                    {
+                        if (sibling->isOnLeft())
+                        {
+                            // left right
+                            sibling->right->color = parent->color;
+                            leftRotate(sibling);
+                            rightRotate(parent);
+                        }
+                        else
+                        {
+                            // right right
+                            sibling->right->color = sibling->color;
+                            sibling->color = parent->color;
+                            leftRotate(parent);
+                        }
+                    }
+                    parent->color = 'B';
+                }
+                else
+                {
+                    // 2 black children
+                    sibling->color = 'R';
+                    if (parent->color == 'B')
+                        fixDoubleBlack(parent);
+                    else
+                        parent->color = 'B';
+                }
+            }
+        }
+    }
+
+    Node<Key, Value> *search(int n)
+    {
+        Node<Key, Value> *temp = Root;
+
+        while (temp != NULL)
+        {
+            if (n < temp->key)
+            {
+                if (temp->left == NULL)
+                    break;
+                else
+                    temp = temp->left;
+            }
+            else if (n == temp->key)
+            {
+                break;
+            }
+            else
+            {
+                if (temp->right == NULL)
+                    break;
+                else
+                    temp = temp->right;
+            }
+        }
+
+        return temp;
+    }
+
+    void clearHelper(Node<Key, Value> *node)
+    {
+        if (node == NULL)
+        {
+            return;
+        }
+
+        clearHelper(node->left);
+        clearHelper(node->right);
+
+        delete node;
     }
 
 public:
@@ -246,7 +649,8 @@ public:
         size = 0;
     }
 
-    Node<Key, Value>* getRoot() {
+    Node<Key, Value> *getRoot()
+    {
         return Root;
     }
 
@@ -281,4 +685,42 @@ public:
         return size;
     }
 
+    void setSize(int size)
+    {
+        this->size = size;
+    }
+
+    int getSize()
+    {
+        return size;
+    }
+
+    bool deleteByVal(int n)
+    {
+
+        if (Root == NULL) {
+            return false;
+        }
+
+        Node<Key, Value> *v = search(n);
+
+
+        if (v->key != n)
+        {
+            return false;
+        }
+
+        size = size - 1;
+        deleteNode(v);
+        
+        return true;
+    }
+
+    void clear()
+    {
+        clearHelper(Root);
+
+        Root = NULL;
+        size = 0;
+    }
 };

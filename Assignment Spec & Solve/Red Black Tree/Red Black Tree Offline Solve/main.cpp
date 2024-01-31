@@ -57,14 +57,14 @@ void inorderTraversal(Node<Key, Value> *node , ofstream& outputFile)
 
         if (node->color == 'R')
         {
-            cout << hue::red << node->key << " => " << node->value << hue::reset << endl;
-            outputFile << node->key << " => " << node->value << endl;
+            cout << hue::red << node->key << " ⇒ " << node->value << hue::reset << endl;
+            outputFile << node->key << " ⇒ " << node->value << endl;
         }
 
         if (node->color == 'B')
         {
-            cout << node->key << " => " << node->value << endl;
-            outputFile << node->key << " => " << node->value << endl;
+            cout << node->key << " ⇒ " << node->value << endl;
+            outputFile << node->key << " ⇒ " << node->value << endl;
         }
 
         inorderTraversal(node->right , outputFile);
@@ -115,10 +115,11 @@ int main()
 
             else
             {
+                mp.clear();
                 cout << "successful" << endl;
+
                 outputFile << endl;
                 outputFile << "successful" << endl;
-                MAP<int, string> mp;
             }
         }
 
@@ -155,16 +156,11 @@ int main()
         if (command == "F")
         {
 
-            // Input Error
-
             int key;
-            // string value;
-            // iss >> key >> value;
+        
             iss >> key;
 
             outputFile << " " << key << endl;
-
-            cout << "Start" << endl;
 
             if (mp.found(key))
             {
@@ -182,7 +178,6 @@ int main()
                            << "not found" << endl;
             }
 
-            cout << "End" << endl;
         }
 
         if (command == "I")
@@ -202,7 +197,18 @@ int main()
         {
             int key;
             iss >> key;
-            cout << endl;
+            outputFile << " " << key << endl;\
+
+            if ( mp.deleteByVal(key) == true ) {
+                printTree(mp.getRoot() , outputFile);
+                outputFile << endl;
+            }
+
+            else {
+                cout << key << " " << "not found" << endl;
+                outputFile << key << " " << "not found" << endl;
+            }
+
         }
 
         outputFile << endl;
