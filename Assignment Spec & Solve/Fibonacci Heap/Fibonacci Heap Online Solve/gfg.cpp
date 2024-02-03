@@ -188,17 +188,22 @@ void Cut(struct node *found, struct node *temp)
 
     (found->left)->right = found->right;
     (found->right)->left = found->left;
+
     if (found == temp->child)
         temp->child = found->right;
 
     temp->degree = temp->degree - 1;
+
     found->right = found;
     found->left = found;
+
     (mini->left)->right = found;
     found->right = mini;
     found->left = mini->left;
     mini->left = found;
+
     found->parent = NULL;
+    
     found->mark = 'B';
 }
 
@@ -373,37 +378,42 @@ void display()
 // Driver code
 int main()
 {
-    // We will create a heap and insert 3 nodes into it
-    cout << "Creating an initial heap" << endl;
-    insertion(5);
-    insertion(2);
-    insertion(8);
+    // // We will create a heap and insert 3 nodes into it
+    // cout << "Creating an initial heap" << endl;
+    // insertion(5);
+    // insertion(2);
+    // insertion(8);
 
-    // Now we will display the root list of the heap
-    display();
+    // // Now we will display the root list of the heap
+    // display();
 
-    // Now we will extract the minimum value node from the heap
-    cout << "Extracting min" << endl;
-    Extract_min();
-    display();
+    // // Now we will extract the minimum value node from the heap
+    // cout << "Extracting min" << endl;
+    // Extract_min();
+    // display();
 
-    // Now we will decrease the value of node '8' to '7'
-    cout << "Decrease value of 8 to 7" << endl;
-    Find(mini, 8, 7);
-    display();
+    // // Now we will decrease the value of node '8' to '7'
+    // cout << "Decrease value of 8 to 7" << endl;
+    // Find(mini, 8, 7);
+    // display();
 
-    // Now we will delete the node '7'
-    cout << "Delete the node 7" << endl;
-    Deletion(7);
-    display();
+    // // Now we will delete the node '7'
+    // cout << "Delete the node 7" << endl;
+    // Deletion(7);
+    // display();
 
-    insertion(100);
-    insertion(99);
-    display();
+    // insertion(100);
+    // insertion(99);
+    // display();
 
-    Extract_min();
+    // Extract_min();
 
-    display();
+    // display();
+
+    insertion(23);
+    insertion(17);
+    insertion(10);
+
 
     return 0;
 }
