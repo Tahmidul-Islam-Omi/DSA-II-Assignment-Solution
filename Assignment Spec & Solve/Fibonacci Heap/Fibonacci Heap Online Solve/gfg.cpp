@@ -286,40 +286,6 @@ void Deletion(int val)
 
 queue<node*> q;
 
-void displayHelper(node *temp)
-{
-
-    while (!q.empty())
-    {
-
-        node *temp = q.front();
-        q.pop();
-
-        cout << temp->key;
-
-        node *childList = temp->child;
-
-        if (childList != NULL)
-        {
-            cout << " -> ";
-        }
-
-        while (childList != NULL)
-        {
-            cout << childList->key << ",";
-
-            if (childList->child != NULL)
-            {
-                q.push(childList);
-            }
-
-            childList = childList->right;
-        }
-
-        cout << endl;
-    }
-}
-
 // GFG
 void display()
 {
@@ -334,12 +300,12 @@ void display()
         {
             cout << ptr->key;
             q.push(ptr);
-            displayHelper(ptr);
+            //displayHelper(ptr);
             ptr = ptr->right;
-            // if (ptr != mini)
-            // {
-            //     cout << "-->";
-            // }
+            if (ptr != mini)
+            {
+                cout << "-->";
+            }
         } while (ptr != mini && ptr->right != NULL);
         cout << endl
              << "The heap has " << no_of_nodes << " nodes" << endl
@@ -429,6 +395,14 @@ int main()
     // Now we will delete the node '7'
     cout << "Delete the node 7" << endl;
     Deletion(7);
+    display();
+
+    insertion(100);
+    insertion(99);
+    display();
+
+    Extract_min();
+
     display();
 
     return 0;

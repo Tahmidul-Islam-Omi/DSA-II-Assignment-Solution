@@ -311,8 +311,49 @@ void Extract_max()
     }
 }
 
+template <typename Key, typename Value>
+void Cut(struct Node<Key, Value> *found, struct Node<Key, Value> *temp)
+{
+    if (found == found->right) {
+        temp->child = NULL;
+    }
 
+    (found->left)->right = found->right;
+    (found->right)->left = found->left;
 
+    if (found == temp->child) {
+        temp->child = found->right;
+    }
+
+    temp->degree = temp->degree - 1;
+    found->right = found;
+    found->left = found;
+    (mini->left)->right = found;
+    found->right = mini;
+    found->left = mini->left;
+    mini->left = found;
+    found->parent = NULL;
+    found->mark = 'B';
+}
+
+template <typename Key, typename Value>
+void Cascase_cut(struct Node<Key, Value> *temp)
+{
+    Node<Key, Value> *ptr5 = temp->parent;
+
+    if (ptr5 != NULL)
+    {
+        if (temp->mark == 'W')
+        {
+            temp->mark = 'B';
+        }
+        else
+        {
+            Cut(temp, ptr5);
+            Cascase_cut(ptr5);
+        }
+    }
+}
 
 int main()
 {

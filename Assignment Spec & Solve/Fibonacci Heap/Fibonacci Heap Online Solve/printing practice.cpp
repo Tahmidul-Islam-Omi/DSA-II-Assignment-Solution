@@ -81,32 +81,20 @@ int main()
 
     child1->Child = node3;
 
-    Node *node7 = new Node(23);
-
     Node *node5 = new Node(4);
     Node *node6 = new Node(9);
     node5->right = node6;
 
-    node7->Child = node5;
-
-
-    Node *node8 = new Node(12);
-    node7->right = node8;
-
+    node1->Child = node5;
+    
     Node *temp = root;
 
     int treeNum = 1;
-
-    //cout << node7->Child->value << endl;
 
     while (temp != NULL)
     {
         cout << "Tree " << treeNum << ": ";
         q.push(temp);
-        if(temp->Child == NULL) {
-            //cout << temp->value << endl;
-            cout << "No Child" << endl;
-        }
         displayHelper(temp);
         temp = temp->right;
         treeNum++;
