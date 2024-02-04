@@ -25,14 +25,15 @@ void displayHelper(Node *root)
     while (!q.empty())
     {
 
-        Node* temp = q.front();
+        Node *temp = q.front();
         q.pop();
 
-        cout << temp->value ;
+        cout << temp->value;
 
         Node *childList = temp->Child;
 
-        if(childList != NULL) {
+        if (childList != NULL)
+        {
             cout << " -> ";
         }
 
@@ -86,7 +87,7 @@ int main()
     node5->right = node6;
 
     node1->Child = node5;
-    
+
     Node *temp = root;
 
     int treeNum = 1;

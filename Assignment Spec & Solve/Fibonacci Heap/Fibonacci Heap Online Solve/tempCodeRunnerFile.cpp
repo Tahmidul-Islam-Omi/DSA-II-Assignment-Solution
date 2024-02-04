@@ -376,14 +376,13 @@ public:
             cout << "(" << temp->key << "," << temp->value << ")";
 
             Node<Key, Value> *childList = temp->child;
-            Node<Key, Value> * childtemp = childList;
 
             if (childList != NULL)
             {
                 cout << " -> ";
             }
 
-            while (childList != childtemp && childList->right != childtemp)
+            while (childList != NULL)
             {
                 cout << "(" << childList->key << "," << childList->value << ")"
                      << " , ";
@@ -452,15 +451,15 @@ int main()
 {
     FibonacciHeap<int, int> FH;
     FH.MakeHeap();
-
     FH.insert(23, 12);
     FH.insert(17, 1);
-    FH.insert(10, 90);
-    FH.insert(12 , 99);
+    FH.insert(10, 90); // 20 , 90
 
-    FH.Extract_max();
+    FH.display();
 
-    FH.insert(19 ,2);
+    FH.Increase_key(90,20);
+
+    FH.display();
 
     FH.Extract_max();
 

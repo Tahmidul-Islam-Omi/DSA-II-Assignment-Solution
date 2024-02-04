@@ -318,102 +318,31 @@ void display()
     }
 }
 
-// By ChatGPT
-// void displayHelper(node *root, int treeNumber)
-// {
-//     if (root == NULL)
-//         return;
 
-//     node *child = root->child;
-
-//     // Print the tree number
-//     cout << "Tree " << treeNumber << ": ";
-
-//     // Print the current root
-//     cout << root->key;
-
-//     // Print the arrow only if there are children
-//     if (child != NULL)
-//     {
-//         cout << " -> ";
-//         do
-//         {
-//             displayHelper(child, treeNumber + 1);
-//             child = child->right;
-//             if (child != root->child)
-//                 cout << ", ";
-//         } while (child != root->child);
-//     }
-
-//     // Print a new line after printing the children of a root
-//     cout << endl;
-// }
-
-// void display()
-// {
-//     node *ptr = mini;
-//     int treeNumber = 1;
-
-//     if (ptr == NULL)
-//         cout << "The Heap is Empty" << endl;
-//     else
-//     {
-//         cout << "Heap:- " << endl;
-//         do
-//         {
-//             displayHelper(ptr, treeNumber);
-//             ptr = ptr->right;
-//             if (ptr != mini)
-//             {
-//                 // Separate different trees
-//                 treeNumber++;
-//             }
-//         } while (ptr != mini && ptr->right != NULL);
-//         cout << endl
-//              << "The heap has " << no_of_nodes << " nodes" << endl
-//              << endl;
-//     }
-// }
-
-// Driver code
 int main()
 {
-    // // We will create a heap and insert 3 nodes into it
-    // cout << "Creating an initial heap" << endl;
-    // insertion(5);
-    // insertion(2);
-    // insertion(8);
-
-    // // Now we will display the root list of the heap
-    // display();
-
-    // // Now we will extract the minimum value node from the heap
-    // cout << "Extracting min" << endl;
-    // Extract_min();
-    // display();
-
-    // // Now we will decrease the value of node '8' to '7'
-    // cout << "Decrease value of 8 to 7" << endl;
-    // Find(mini, 8, 7);
-    // display();
-
-    // // Now we will delete the node '7'
-    // cout << "Delete the node 7" << endl;
-    // Deletion(7);
-    // display();
-
-    // insertion(100);
-    // insertion(99);
-    // display();
-
-    // Extract_min();
-
-    // display();
-
-    insertion(23);
-    insertion(17);
-    insertion(10);
-
-
+    cout << "Creating an initial heap" << endl;
+    insertion(5);
+    insertion(2);
+    insertion(8);
+ 
+    // Now we will display the root list of the heap
+    display();
+ 
+    // Now we will extract the minimum value node from the heap
+    cout << "Extracting min" << endl;
+    Extract_min();
+    display();
+ 
+    // Now we will decrease the value of node '8' to '7'
+    cout << "Decrease value of 8 to 7" << endl;
+    Find(mini, 8, 7);
+    display();
+ 
+    // Now we will delete the node '7'
+    cout << "Delete the node 7" << endl;
+    Deletion(7);
+    display();
+ 
     return 0;
 }
