@@ -2,8 +2,9 @@
 using namespace std;
 
 template <typename Key, typename Value>
-struct Node
+class Node
 {
+public:
     Key key;
     Value value;
     Node *parent;
@@ -13,6 +14,17 @@ struct Node
     int degree;
     char marked;
     char C;
+
+    Node()
+    {
+        parent = NULL;
+        child = NULL;
+        left = NULL;
+        right = NULL;
+        marked = 'W';
+        C = 'N';
+        degree = 0;
+    }
 };
 
 template <typename Key, typename Value>
@@ -20,345 +32,606 @@ class FibonacciHeap
 {
     int nodes;
     Node<Key, Value> *H;
+    queue<Node<Key, Value> *> q;
+    unordered_map<Value, Node<Key, Value> *> mp;
 
 public:
-    void insert(Key key, Value value);
-    void MakeHeap();
-    Node<Key, Value> *meld(Node<Key, Value> *H1, Node<Key, Value> *H2);
-    void ExtractMax();
-    void Consolidate(Node<Key, Value> *H1);
-};
-
-template <typename Key, typename Value>
-void FibonacciHeap<Key, Value>::MakeHeap()
-{
-    Node<Key, Value> *node;
-    node = NULL;
-    H = node;
-}
-
-template <typename Key, typename Value>
-void FibonacciHeap<Key, Value>::insert(Key key, Value value)
-{
-    Node<Key, Value> *node = new Node;
-    node->key = key;
-    node->value = value;
-
-    node->degree = 0;
-    node->parent = NULL;
-    node->left = NULL;
-    node->right = NULL;
-    node->child = NULL;
-    node->mark = 'W';
-    node->C = 'N';
-
-    node->left = node;
-    node->right = node;
-
-    if (H != NULL)
+    int getNodeCount()
     {
-        (H->left)->right = node;
-        node->right = H;
-        node->left = H->left;
-        H->left = node;
+        return nodes;
+    }
 
-        if (node->key > H->key)
+    Node<Key, Value> *getH()
+    {
+        return H;
+    }
+
+    Node<Key, Value> *HeapInitialization()
+    {
+        Node<Key, Value> *node;
+        node = NULL;
+        H = node;
+        nodes = 0;
+
+        return H;
+    }
+
+    void insertion(Key key, Value value)
+    {
+        Node<Key, Value> *node = new Node<Key, Value>();
+        node->key = key;
+        node->value = value;
+
+        mp[value] = node;
+
+        node->degree = 0;
+        node->parent = NULL;
+        node->left = NULL;
+        node->right = NULL;
+        node->child = NULL;
+        node->marked = 'W';
+        node->C = 'N';
+
+        node->left = node;
+        node->right = node;
+
+        if (H != NULL)
+        {
+            (H->left)->right = node;
+            node->right = H;
+            node->left = H->left;
+            H->left = node;
+
+            if (node->key > H->key)
+            {
+                H = node;
+            }
+        }
+
+        else
         {
             H = node;
         }
+
+        nodes++;
     }
 
-    else
+    void meld(FibonacciHeap<Key, Value> H1, int cnt)
     {
-        H = node;
-    }
 
-    nodes++;
-}
-
-template <typename Key, typename Value>
-Node<Key, Value> *FibonacciHeap<Key, Value>::meld(Node<Key, Value> *H1, Node<Key, Value> *H2)
-{
-    Node<Key, Value> *node;
-    H = H1;
-
-    // merging root lists
-    (H->left)->right = H2;
-    (H2->left)->right = H;
-
-    // updating pointers of node
-    node = H->left;
-    H->left = H2->left;
-    H2->left = node;
-
-    return H;
-}
-
-// template <typename Key, typename Value>
-// Node<Key, Value> *FibonacciHeap<Key, Value>::ExtractMax(Node<Key, Value> *H1) {
-//     Node<Key, Value> *p;
-//     Node<Key, Value> *ptr;
-//     Node<Key, Value> *node = H1;
-
-//     p = node;
-//     ptr = node;
-
-//     // Heap is Empty, so
-//     if (node == NULL) {
-//         return node;
-//     }
-
-//     Node<Key, Value> *child = NULL;
-//     Node<Key, Value> *np;
-
-//     if (node->child != NULL) {
-//         child = node->child;
-//     }
-
-//     // traversing in the child list
-//     if (child != NULL)
-//     {
-//         ptr = child;
-//         np = child->right;
-
-//         while (np != ptr) {
-//             // add to the root list
-//             (H1->left)->right = child;
-//             child->right = H1;
-//             child->left = H1->left;
-//             H1->left = child;
-
-//             // if found , then updated
-//             if (child->key > H1->key) {
-//                 H1 = child;
-//             }
-
-//             child->parent = NULL;
-//             child = np;
-
-//         }
-//     }
-
-//     // delete the minimum node
-//     (node->left)->right = node->right;
-//     (node->right)->left = node->left;
-//     H1 = node->right;
-
-//     // Heap is empty
-//     if (node == node->right && node->child == NULL) {
-//         H = NULL;
-//     }
-
-//     // Heap is not empty, so consolidate
-//     else
-//     {
-//         H1 = node->right;
-//         Consolidate(H1);
-//     }
-
-//     nodes--;
-//     return p;
-// }
-
-template <typename Key, typename Value>
-void Consolidate()
-{
-    int temp1;
-    float temp2 = (log(nodes)) / (log(2));
-    int temp3 = temp2;
-
-    struct Node<Key, Value> *arr[temp3 + 1];
-
-    for (int i = 0; i <= temp3; i++)
-    {
-        arr[i] = NULL;
-    }
-
-    Node<Key, Value> *ptr1 = H;
-    Node<Key, Value> *ptr2;
-    Node<Key, Value> *ptr3;
-
-    Node<Key, Value> *ptr4 = ptr1;
-    do
-    {
-        ptr4 = ptr4->right;
-        temp1 = ptr1->degree;
-
-        while (arr[temp1] != NULL)
+        if (H != NULL)
         {
-            ptr2 = arr[temp1];
+            (H->left)->right = H1;
+            H1->right = H;
+            H1->left = H->left;
+            H->left = H1;
 
-            if (ptr1->key > ptr2->key)
+            if (H1->key > H->key)
             {
-                ptr3 = ptr1;
-                ptr1 = ptr2;
-                ptr2 = ptr3;
+                H = H1;
             }
-
-            if (ptr2 == H)
-            {
-                H = ptr1;
-            }
-
-            Fibonnaci_link(ptr2, ptr1);
-
-            if (ptr1->right == ptr1)
-            {
-                H = ptr1;
-            }
-
-            arr[temp1] = NULL;
-            temp1++;
         }
 
-        arr[temp1] = ptr1;
-        ptr1 = ptr1->right;
-
-    } while (ptr1 != H);
-
-    H = NULL;
-
-    for (int j = 0; j <= temp3; j++)
-    {
-        if (arr[j] != NULL)
+        else
         {
-            arr[j]->left = arr[j];
-            arr[j]->right = arr[j];
+            H = H1;
+        }
+        nodes += cnt;
+    }
 
-            if (H != NULL)
+    // void Fibonnacci_link(Node<Key, Value> *node2, Node<Key, Value> *node1)
+    // {
+    //     // Deletion node2 bcz it is added in node1
+    //     (node2->left)->right = node2->right;
+    //     (node2->right)->left = node2->left;
+
+    //     // if only one node left
+
+    //     if (node1->right == node1)
+    //     {
+    //         H = node1;
+    //     }
+
+    //     node2->left = node2;
+    //     node2->right = node2;
+    //     node2->parent = node1;
+
+    //     if (node1->child == NULL)
+    //     {
+    //         node1->child = node2;
+    //     }
+
+    //     // linking child & node2
+    //     node2->right = node1->child;
+    //     node2->left = (node1->child)->left;
+    //     ((node1->child)->left)->right = node2;
+    //     (node1->child)->left = node2;
+
+    //     // Update node1's child to be the maximum among its children
+
+    //     if (node2->key > (node1->child)->key)
+    //     {
+    //         node1->child = node2;
+    //     }
+
+    //     node1->degree++;
+    // }
+
+    void Fibonnacci_link(Node<Key, Value> *node2, Node<Key, Value> *node1)
+    {
+        // Deletion node2 bcz it is added in node1
+        (node2->left)->right = node2->right;
+        (node2->right)->left = node2->left;
+
+        // if only one node left
+
+        if (node1->right == node1)
+        {
+            H = node1;
+        }
+
+        node2->left = node2;
+        node2->right = node2;
+        node2->parent = node1;
+
+        if (node1->child == NULL)
+        {
+            node1->child = node2;
+        }
+
+        // linking child & node2
+        node2->right = node1->child;
+        node2->left = (node1->child)->left;
+        ((node1->child)->left)->right = node2;
+        (node1->child)->left = node2;
+
+        // Update node1's child to be the maximum among its children
+
+        if (node2->key > (node1->child)->key)
+        {
+            node1->child = node2;
+        }
+
+        node1->degree++;
+    }
+
+    // void Consolidate()
+    // {
+    //     int temp1;
+
+    //     // maximum degree a node can have
+    //     float temp2 = (log(nodes)) / (log(2));
+    //     int temp3 = temp2;
+
+    //     Node<Key, Value> *arr[temp3 + 1];
+
+    //     for (int i = 0; i <= temp3; i++)
+    //     {
+    //         arr[i] = NULL;
+    //     }
+
+    //     Node<Key, Value> *node1 = H;
+    //     Node<Key, Value> *node2;
+    //     Node<Key, Value> *node3;
+
+    //     Node<Key, Value> *node4 = node1;
+    //     do
+    //     {
+    //         node4 = node4->right;
+    //         temp1 = node1->degree;
+
+    //         while (arr[temp1] != NULL)
+    //         {
+    //             // previous value saved
+    //             node2 = arr[temp1];
+
+    //             if (node1->key < node2->key)
+    //             {
+    //                 // swapping
+    //                 node3 = node1;
+    //                 node1 = node2;
+    //                 node2 = node3;
+    //             }
+
+    //             if (node2 == H)
+    //             {
+    //                 H = node1;
+    //             }
+
+    //             Fibonnacci_link(node2, node1);
+
+    //             arr[temp1] = NULL;
+    //             temp1++;
+    //         }
+
+    //         arr[temp1] = node1;
+    //         node1 = node1->right;
+
+    //     } while (node1 != H);
+
+    //     H = NULL;
+
+    //     for (int j = 0; j <= temp3; j++)
+    //     {
+    //         if (arr[j] != NULL)
+    //         {
+    //             if (H != NULL)
+    //             {
+    //                 (H->left)->right = arr[j];
+    //                 arr[j]->right = H;
+    //                 arr[j]->left = H->left;
+    //                 H->left = arr[j];
+    //                 if (arr[j]->key > H->key)
+    //                 {
+    //                     H = arr[j];
+    //                 }
+    //             }
+
+    //             else
+    //             {
+    //                 H = arr[j];
+    //             }
+    //         }
+    //     }
+    // }
+
+    void Consolidate()
+    {
+        int temp1;
+
+        // maximum degree a node can contain
+        float temp2 = (log(nodes)) / (log(2));
+        int temp3 = temp2;
+
+        Node<Key, Value> *arr[temp3 + 1];
+
+        for (int i = 0; i <= temp3; i++)
+        {
+            arr[i] = NULL;
+        }
+
+        Node<Key, Value> *node1 = H;
+        Node<Key, Value> *node2;
+        Node<Key, Value> *node3;
+
+        Node<Key, Value> *node4 = node1;
+        do
+        {
+            node4 = node4->right;
+            temp1 = node1->degree;
+
+            while (arr[temp1] != NULL)
             {
-                (H->left)->right = arr[j];
-                arr[j]->right = H;
-                arr[j]->left = H->left;
-                H->left = arr[j];
-                if (arr[j]->key > H->key)
+                // previous value saved
+                node2 = arr[temp1];
+
+                if (node1->key < node2->key)
+                {
+                    // swapping
+                    node3 = node1;
+                    node1 = node2;
+                    node2 = node3;
+                }
+
+                if (node2 == H)
+                {
+                    H = node1;
+                }
+
+                Fibonnacci_link(node2, node1);
+
+                arr[temp1] = NULL;
+                temp1++;
+            }
+
+            arr[temp1] = node1;
+            node1 = node1->right;
+
+        } while (node1 != H);
+
+        H = NULL;
+
+        for (int j = 0; j <= temp3; j++)
+        {
+            if (arr[j] != NULL)
+            {
+                if (H != NULL)
+                {
+                    (H->left)->right = arr[j];
+                    arr[j]->right = H;
+                    arr[j]->left = H->left;
+                    H->left = arr[j];
+                    if (arr[j]->key > H->key)
+                    {
+                        H = arr[j];
+                    }
+                }
+
+                else
                 {
                     H = arr[j];
                 }
             }
+        }
+    }
 
+    void Extract_max()
+    {
+        if (H == NULL)
+        {
+            cout << "Heap is empty" << endl;
+        }
+
+        else
+        {
+            Node<Key, Value> *temp = H;
+            Node<Key, Value> *pntr = temp;
+
+            Node<Key, Value> *x = NULL;
+
+            if (temp->child != NULL)
+            {
+
+                // traversing to the root list
+
+                x = temp->child;
+                do
+                {
+                    // adding child into the root list
+                    pntr = x->right;
+                    (H->left)->right = x;
+                    x->right = H;
+                    x->left = H->left;
+                    H->left = x;
+
+                    if (x->key > H->key)
+                    {
+                        H = x;
+                    }
+
+                    x->parent = NULL;
+                    x = pntr;
+
+                } while (pntr != temp->child);
+            }
+
+            // delete the max node
+            (temp->left)->right = temp->right;
+            (temp->right)->left = temp->left;
+            H = temp->right;
+
+            // Heap is empty
+
+            if (temp == temp->right && temp->child == NULL)
+            {
+                H = NULL;
+            }
+
+            // Heap is not empty, so consolidate
             else
             {
-                H = arr[j];
+                H = temp->right;
+                Consolidate();
             }
 
-            if (H == NULL)
-            {
-                H = arr[j];
-            }
+            nodes--;
+        }
+    }
 
-            else if (arr[j]->key > H->key)
+    void Cut(Node<Key, Value> *IncreNode, Node<Key, Value> *Parent)
+    {
+        // If found is the only node in its child list
+        if (IncreNode == IncreNode->right)
+        {
+            Parent->child = NULL;
+        }
+
+        // // Unlink found from its siblings
+        (IncreNode->left)->right = IncreNode->right;
+        (IncreNode->right)->left = IncreNode->left;
+
+        // If found is the child of temp, update temp's child pointer
+        if (IncreNode == Parent->child)
+        {
+            Parent->child = IncreNode->right;
+        }
+
+        Parent->degree = Parent->degree - 1;
+
+        //  Make found a singleton circular list
+        IncreNode->right = IncreNode;
+        IncreNode->left = IncreNode;
+
+        // // Insert found into the root list
+        (H->left)->right = IncreNode;
+        IncreNode->right = H;
+        IncreNode->left = H->left;
+        H->left = IncreNode;
+
+        IncreNode->parent = NULL;
+
+        IncreNode->marked = 'B';
+    }
+
+    // Recursive cascade cutting function
+    void Cascase_cut(Node<Key, Value> *Parent)
+    {
+        Node<Key, Value> *node5 = Parent->parent;
+
+        if (node5 != NULL)
+        {
+            // If temp is not marked, mark it as 'B' (black)
+            if (Parent->marked == 'W')
             {
-                H = arr[j];
+                Parent->marked = 'B';
+            }
+            else
+            {
+                // If temp is marked, perform a cut and recursively perform cascading cut on its parent
+                Cut(Parent, node5);
+                Cascase_cut(node5);
             }
         }
     }
-}
 
-template <typename Key, typename Value>
-void Extract_max()
-{
-    if (H == NULL)
+    void Increase_key(Value value, Key new_key)
     {
-        cout << "Heap is empty" << endl;
+        if (H == NULL)
+        {
+            cout << "The Heap is Empty" << endl;
+            return;
+        }
+
+        if (mp[value] == NULL)
+        {
+            cout << "Value is not found" << endl;
+            return;
+        }
+
+        Node<Key, Value> *found = mp[value];
+
+        Node<Key, Value> *temp = found->parent;
+
+        found->key = new_key;
+
+        if (temp != NULL && found->key > temp->key)
+        {
+            Cut(found, temp);
+            Cascase_cut(temp);
+        }
+
+        if (found->key > H->key)
+        {
+            H = found;
+        }
     }
 
-    else
+    void deletion(Value value)
     {
-        Node<Key, Value> *temp = H;
-        node *pntr;
-        pntr = temp;
-        Node<Key, Value> *x = NULL;
-        if (temp->child != NULL)
+        if (H == NULL)
+        {
+            cout << "Heap is Empty" << endl;
+        }
+
+        else
         {
 
-            x = temp->child;
+            Increase_key(value, 10000000);
+            Extract_max();
+        }
+    }
+
+    void displayHelper()
+    {
+        while (!q.empty())
+        {
+
+            Node<Key, Value> *temp = q.front();
+            q.pop();
+
+            cout << "(" << temp->key << "," << temp->value << ")";
+
+            Node<Key, Value> *childList = temp->child;
+            Node<Key, Value> *childtemp = childList;
+
+            if (childList != NULL)
+            {
+                cout << " -> ";
+            }
+
+            if (childList != NULL)
+            {
+
+                do
+                {
+                    cout << "(" << childList->key << "," << childList->value << ")"
+                         << " , ";
+
+                    if (childList->child != NULL)
+                    {
+                        q.push(childList);
+                    }
+
+                    childList = childList->right;
+
+                } while (childList != childtemp && childList->right != NULL);
+            }
+
+            cout << endl;
+        }
+    }
+
+    void display()
+    {
+        Node<Key, Value> *node = H;
+
+        if (node == NULL)
+        {
+            cout << "Heap is Empty!" << endl;
+            return;
+        }
+
+        int treeNum = 1;
+
+        do
+        {
+            cout << "Tree " << treeNum << ": ";
+            q.push(node);
+            displayHelper();
+            node = node->right;
+            treeNum++;
+        } while (node != H && node->right != NULL);
+    }
+
+    void DDisplay()
+    {
+        Node<Key, Value> *node = H;
+        if (node == NULL)
+            cout << "The Heap is Empty" << endl;
+
+        else
+        {
+            cout << "The root nodes of Heap are: " << endl;
             do
             {
-                pntr = x->right;
-                (H->left)->right = x;
-                x->right = H;
-                x->left = H->left;
-                H->left = x;
-
-                if (x->key > H->key)
+                cout << node->key;
+                q.push(node);
+                node = node->right;
+                if (node != H)
                 {
-                    H = x;
+                    cout << "-->";
                 }
-
-                x->parent = NULL;
-                x = pntr;
-
-            } while (pntr != temp->child);
-        }
-
-        (temp->left)->right = temp->right;
-        (temp->right)->left = temp->left;
-        H = temp->right;
-
-        if (temp == temp->right && temp->child == NULL)
-        {
-            H = NULL;
-        }
-
-        else
-        {
-            H = temp->right;
-            Consolidate();
-        }
-
-        no_of_nodes--;
-    }
-}
-
-template <typename Key, typename Value>
-void Cut(struct Node<Key, Value> *found, struct Node<Key, Value> *temp)
-{
-    if (found == found->right) {
-        temp->child = NULL;
-    }
-
-    (found->left)->right = found->right;
-    (found->right)->left = found->left;
-
-    if (found == temp->child) {
-        temp->child = found->right;
-    }
-
-    temp->degree = temp->degree - 1;
-    found->right = found;
-    found->left = found;
-    (mini->left)->right = found;
-    found->right = mini;
-    found->left = mini->left;
-    mini->left = found;
-    found->parent = NULL;
-    found->mark = 'B';
-}
-
-template <typename Key, typename Value>
-void Cascase_cut(struct Node<Key, Value> *temp)
-{
-    Node<Key, Value> *ptr5 = temp->parent;
-
-    if (ptr5 != NULL)
-    {
-        if (temp->mark == 'W')
-        {
-            temp->mark = 'B';
-        }
-        else
-        {
-            Cut(temp, ptr5);
-            Cascase_cut(ptr5);
+            } while (node != H && node->right != NULL);
+            cout << endl
+                 << "The heap has " << nodes << " nodes" << endl
+                 << endl;
         }
     }
-}
+};
 
-int main()
-{
-    
+// int main()
+// {
+//     FibonacciHeap<int, int> FH;
+//     FH.HeapInitialization();
 
+//     FH.insertion(23, 12);
+//     FH.insertion(17, 1);
+//     FH.insertion(10, 90);
+//     FH.insertion(12, 99);
 
-    return 0;
-}
+//     FH.Extract_max();
+
+//     FH.insertion(19, 2);
+
+//     FH.Extract_max();
+
+//     FH.insertion(20, 11);
+//     FH.insertion(21, 27);
+//     FH.insertion(29, 3);
+
+//     FH.Extract_max();
+
+//     FH.display();
+
+//     FH.DDisplay();
+// }

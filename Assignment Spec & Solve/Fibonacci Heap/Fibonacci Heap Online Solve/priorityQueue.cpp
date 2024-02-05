@@ -37,10 +37,14 @@ public:
 
     void print(Node<int, int> *heap)
     {
-        FH.display();
-        cout << endl;
 
-        //cout << FH.getH()->child->key << endl;
+        FH.display();
+    }
+
+    void rootListprint(Node<int, int> *heap)
+    {
+
+        FH.rootListDisplay();
     }
 
     void extract_max(Node<int, int> *heap)
@@ -64,12 +68,12 @@ public:
         cout << "Max Value is (" << FH.getH()->key << "," << FH.getH()->value << ")" << endl;
     }
 
-    void meld(Node<int, int> *heap1 , Node<int, int> *heap2) {
+    void meld(FibonacciHeap<int, int> heap1, FibonacciHeap<int, int> heap2)
+    {
         // assuming heap1 is existing heap
         int cnt = heap2.getNodeCount();
-        FH.meld(heap2 , cnt);
+        FH.meld(heap2, cnt);
     }
-
 };
 
 int main()
@@ -78,5 +82,20 @@ int main()
     Node<int, int> *Heap;
     Heap = pq.make_heap();
 
-    pq.print(Heap);
+    pq.insert(Heap, 23, 1);
+    pq.insert(Heap, 19, 2);
+    pq.insert(Heap, 70, 3);
+    pq.insert(Heap, 39, 4);
+    pq.insert(Heap, 47, 5);
+    pq.insert(Heap, 49, 6);
+
+    pq.extract_max(Heap);
+
+    pq.insert(Heap, 67, 8);
+    pq.insert(Heap, 90, 9);
+    pq.insert(Heap, 32, 12);
+
+    pq.extract_max(Heap);
+
+    pq.rootListprint(Heap);
 }
