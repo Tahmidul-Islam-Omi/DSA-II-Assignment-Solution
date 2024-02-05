@@ -33,7 +33,7 @@ class FibonacciHeap
     int nodes;
     Node<Key, Value> *H;
     queue<Node<Key, Value> *> q;
-    unordered_map<Value, Node<Key, Value> *> mp;
+    unordered_map<Value ,  Node<Key, Value> * > mp;
 
 public:
     int getNodeCount()
@@ -41,22 +41,15 @@ public:
         return nodes;
     }
 
-    Node<Key, Value> *getH()
-    {
-        return H;
-    }
-
-    Node<Key, Value> *HeapInitialization()
+    void MakeHeap()
     {
         Node<Key, Value> *node;
         node = NULL;
         H = node;
         nodes = 0;
-
-        return H;
     }
 
-    void insertion(Key key, Value value)
+    void insert(Key key, Value value)
     {
         Node<Key, Value> *node = new Node<Key, Value>();
         node->key = key;
@@ -279,19 +272,17 @@ public:
 
     void Cut(Node<Key, Value> *IncreNode, Node<Key, Value> *Parent)
     {
-        // If found is the only node in its child list
-        if (IncreNode == IncreNode->right)
-        {
+        //If found is the only node in its child list
+        if (IncreNode == IncreNode->right) {
             Parent->child = NULL;
         }
-
+        
         // // Unlink found from its siblings
         (IncreNode->left)->right = IncreNode->right;
         (IncreNode->right)->left = IncreNode->left;
 
         // If found is the child of temp, update temp's child pointer
-        if (IncreNode == Parent->child)
-        {
+        if (IncreNode == Parent->child) {
             Parent->child = IncreNode->right;
         }
 
@@ -326,7 +317,7 @@ public:
             }
             else
             {
-                // If temp is marked, perform a cut and recursively perform cascading cut on its parent
+                 // If temp is marked, perform a cut and recursively perform cascading cut on its parent
                 Cut(Parent, ptr5);
                 Cascase_cut(ptr5);
             }
@@ -335,21 +326,19 @@ public:
 
     void Increase_key(Value value, Key new_key)
     {
-        if (H == NULL)
-        {
+        if (H == NULL) {
             cout << "The Heap is Empty" << endl;
             return;
         }
 
-        if (mp[value] == NULL)
-        {
+        if(mp[value] == NULL) {
             cout << "Value is not found" << endl;
             return;
         }
 
-        Node<Key, Value> *found = mp[value];
+        Node<Key, Value> * found = mp[value];
 
-        Node<Key, Value> *temp = found->parent;
+        Node<Key, Value> * temp = found->parent;
 
         found->key = new_key;
 
@@ -359,23 +348,19 @@ public:
             Cascase_cut(temp);
         }
 
-        if (found->key > H->key)
-        {
+        if (found->key > H->key) {
             H = found;
         }
     }
 
-    void deletion(Value value)
-    {
-        if (H == NULL)
-        {
+    void deletion(Value value) {
+        if( H == NULL) {
             cout << "Heap is Empty" << endl;
         }
 
-        else
-        {
+        else {
 
-            Increase_key(value, 10000000);
+            Increase_key(value , 10000000);
             Extract_max();
         }
     }
@@ -391,29 +376,24 @@ public:
             cout << "(" << temp->key << "," << temp->value << ")";
 
             Node<Key, Value> *childList = temp->child;
-            Node<Key, Value> *childtemp = childList;
+            Node<Key, Value> * childtemp = childList;
 
             if (childList != NULL)
             {
                 cout << " -> ";
             }
 
-            if (childList != NULL)
+            while (childList != childtemp && childList->right != childtemp)
             {
+                cout << "(" << childList->key << "," << childList->value << ")"
+                     << " , ";
 
-                do
+                if (childList->child != NULL)
                 {
-                    cout << "(" << childList->key << "," << childList->value << ")"
-                         << " , ";
+                    q.push(childList);
+                }
 
-                    if (childList->child != NULL)
-                    {
-                        q.push(childList);
-                    }
-
-                    childList = childList->right;
-
-                } while (childList != childtemp && childList->right != NULL);
+                childList = childList->right;
             }
 
             cout << endl;
@@ -468,29 +448,21 @@ public:
     }
 };
 
-// int main()
-// {
-//     FibonacciHeap<int, int> FH;
-//     FH.HeapInitialization();
+int main()
+{
+    FibonacciHeap<int, int> FH;
+    FH.MakeHeap();
 
-//     FH.insertion(23, 12);
-//     FH.insertion(17, 1);
-//     FH.insertion(10, 90);
-//     FH.insertion(12, 99);
+    FH.insert(23, 12);
+    FH.insert(17, 1);
+    FH.insert(10, 90);
+    FH.insert(12 , 99);
 
-//     FH.Extract_max();
+    FH.Extract_max();
 
-//     FH.insertion(19, 2);
+    FH.insert(19 ,2);
 
-//     FH.Extract_max();
+    FH.Extract_max();
 
-//     FH.insertion(20, 11);
-//     FH.insertion(21, 27);
-//     FH.insertion(29, 3);
-
-//     FH.Extract_max();
-
-//     FH.display();
-
-//     FH.DDisplay();
-// }
+    FH.display();
+}
