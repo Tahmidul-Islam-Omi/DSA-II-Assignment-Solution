@@ -96,49 +96,190 @@ public:
         nodes++;
     }
 
-    void Fibonnacci_link(Node<Key, Value> *ptr2, Node<Key, Value> *ptr1)
+    void meld(Node<Key, Value> *node, int cnt)
+    {
+
+        if (H != NULL)
+        {
+            (H->left)->right = node;
+            node->right = H;
+            node->left = H->left;
+            H->left = node;
+
+            if (node->key > H->key)
+            {
+                H = node;
+            }
+        }
+
+        else
+        {
+            H = node;
+        }
+        nodes += cnt;
+    }
+
+    // void Fibonnacci_link(Node<Key, Value> *ptr2, Node<Key, Value> *ptr1)
+    // {
+    //     // Deletion ptr2 bcz it is added in ptr1
+    //     (ptr2->left)->right = ptr2->right;
+    //     (ptr2->right)->left = ptr2->left;
+
+    //     // if only one node left
+
+    //     if (ptr1->right == ptr1)
+    //     {
+    //         H = ptr1;
+    //     }
+
+    //     ptr2->left = ptr2;
+    //     ptr2->right = ptr2;
+    //     ptr2->parent = ptr1;
+
+    //     if (ptr1->child == NULL)
+    //     {
+    //         ptr1->child = ptr2;
+    //     }
+
+    //     // linking child & ptr2
+    //     ptr2->right = ptr1->child;
+    //     ptr2->left = (ptr1->child)->left;
+    //     ((ptr1->child)->left)->right = ptr2;
+    //     (ptr1->child)->left = ptr2;
+
+    //     // Update ptr1's child to be the maximum among its children
+
+    //     if (ptr2->key > (ptr1->child)->key)
+    //     {
+    //         ptr1->child = ptr2;
+    //     }
+
+    //     ptr1->degree++;
+    // }
+
+    void Fibonnacci_link(Node<Key, Value> *node2, Node<Key, Value> *node1)
     {
         // Deletion ptr2 bcz it is added in ptr1
-        (ptr2->left)->right = ptr2->right;
-        (ptr2->right)->left = ptr2->left;
+        (node2->left)->right = node2->right;
+        (node2->right)->left = node2->left;
 
         // if only one node left
 
-        if (ptr1->right == ptr1)
+        if (node1->right == node1)
         {
             H = ptr1;
         }
 
-        ptr2->left = ptr2;
-        ptr2->right = ptr2;
-        ptr2->parent = ptr1;
+        node2->left = node2;
+        node2->right = node2;
+        node2->parent = node1;
 
-        if (ptr1->child == NULL)
+        if (node1->child == NULL)
         {
-            ptr1->child = ptr2;
+            node1->child = node2;
         }
 
         // linking child & ptr2
-        ptr2->right = ptr1->child;
-        ptr2->left = (ptr1->child)->left;
-        ((ptr1->child)->left)->right = ptr2;
-        (ptr1->child)->left = ptr2;
+        node2->right = node1->child;
+        node2->left = (node1->child)->left;
+        ((node1->child)->left)->right = node2;
+        (node1->child)->left = node2;
 
         // Update ptr1's child to be the maximum among its children
 
-        if (ptr2->key > (ptr1->child)->key)
+        if (node2->key > (node1->child)->key)
         {
-            ptr1->child = ptr2;
+            node1->child = node2;
         }
 
-        ptr1->degree++;
+        node1->degree++;
     }
+
+    // void Consolidate()
+    // {
+    //     int temp1;
+
+    //     // maximum degree a node can have
+    //     float temp2 = (log(nodes)) / (log(2));
+    //     int temp3 = temp2;
+
+    //     Node<Key, Value> *arr[temp3 + 1];
+
+    //     for (int i = 0; i <= temp3; i++)
+    //     {
+    //         arr[i] = NULL;
+    //     }
+
+    //     Node<Key, Value> *ptr1 = H;
+    //     Node<Key, Value> *ptr2;
+    //     Node<Key, Value> *ptr3;
+
+    //     Node<Key, Value> *ptr4 = ptr1;
+    //     do
+    //     {
+    //         ptr4 = ptr4->right;
+    //         temp1 = ptr1->degree;
+
+    //         while (arr[temp1] != NULL)
+    //         {
+    //             // previous value saved
+    //             ptr2 = arr[temp1];
+
+    //             if (ptr1->key < ptr2->key)
+    //             {
+    //                 // swapping
+    //                 ptr3 = ptr1;
+    //                 ptr1 = ptr2;
+    //                 ptr2 = ptr3;
+    //             }
+
+    //             if (ptr2 == H)
+    //             {
+    //                 H = ptr1;
+    //             }
+
+    //             Fibonnacci_link(ptr2, ptr1);
+
+    //             arr[temp1] = NULL;
+    //             temp1++;
+    //         }
+
+    //         arr[temp1] = ptr1;
+    //         ptr1 = ptr1->right;
+
+    //     } while (node1 != H);
+
+    //     H = NULL;
+
+    //     for (int j = 0; j <= temp3; j++)
+    //     {
+    //         if (arr[j] != NULL)
+    //         {
+    //             if (H != NULL)
+    //             {
+    //                 (H->left)->right = arr[j];
+    //                 arr[j]->right = H;
+    //                 arr[j]->left = H->left;
+    //                 H->left = arr[j];
+    //                 if (arr[j]->key > H->key)
+    //                 {
+    //                     H = arr[j];
+    //                 }
+    //             }
+
+    //             else
+    //             {
+    //                 H = arr[j];
+    //             }
+    //         }
+    //     }
+    // }
 
     void Consolidate()
     {
         int temp1;
 
-        // maximum degree a node can have
+        // maximum degree a node can contain
         float temp2 = (log(nodes)) / (log(2));
         int temp3 = temp2;
 
@@ -149,35 +290,35 @@ public:
             arr[i] = NULL;
         }
 
-        Node<Key, Value> *ptr1 = H;
-        Node<Key, Value> *ptr2;
-        Node<Key, Value> *ptr3;
+        Node<Key, Value> *node1 = H;
+        Node<Key, Value> *node2;
+        Node<Key, Value> *node3;
 
-        Node<Key, Value> *ptr4 = ptr1;
+        Node<Key, Value> *node4 = node1;
         do
         {
-            ptr4 = ptr4->right;
-            temp1 = ptr1->degree;
+            node4 = node4->right;
+            temp1 = node1->degree;
 
             while (arr[temp1] != NULL)
             {
                 // previous value saved
-                ptr2 = arr[temp1];
+                node2 = arr[temp1];
 
-                if (ptr1->key < ptr2->key)
+                if (node1->key < node2->key)
                 {
                     // swapping
-                    ptr3 = ptr1;
-                    ptr1 = ptr2;
-                    ptr2 = ptr3;
+                    node3 = node1;
+                    node1 = node2;
+                    node2 = node3;
                 }
 
-                if (ptr2 == H)
+                if (node2 == H)
                 {
-                    H = ptr1;
+                    H = node1;
                 }
 
-                Fibonnacci_link(ptr2, ptr1);
+                Fibonnacci_link(node2, node1);
 
                 arr[temp1] = NULL;
                 temp1++;

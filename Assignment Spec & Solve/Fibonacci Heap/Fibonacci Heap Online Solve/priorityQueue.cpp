@@ -64,9 +64,12 @@ public:
         cout << "Max Value is (" << FH.getH()->key << "," << FH.getH()->value << ")" << endl;
     }
 
-    void test() {
-
+    void meld(Node<int, int> *heap1 , Node<int, int> *heap2) {
+        // assuming heap1 is existing heap
+        int cnt = heap2.getNodeCount();
+        FH.meld(heap2 , cnt);
     }
+
 };
 
 int main()
@@ -74,17 +77,6 @@ int main()
     PriorityQueue<int, int> pq;
     Node<int, int> *Heap;
     Heap = pq.make_heap();
-
-    pq.insert(Heap, 23, 5);
-    pq.insert(Heap, 19, 3);
-    pq.insert(Heap, 70, 1);
-    pq.insert(Heap, 39, 8);
-    pq.insert(Heap, 47, 2);
-    pq.insert(Heap, 49, 15);
-
-    pq.print(Heap);
-
-    pq.extract_max(Heap);
 
     pq.print(Heap);
 }
