@@ -74,6 +74,7 @@ public:
         int cnt = heap2.getNodeCount();
         FH.meld(heap2, cnt);
     }
+
 };
 
 int main()
@@ -82,18 +83,29 @@ int main()
     Node<int, int> *Heap;
     Heap = pq.make_heap();
 
-    pq.insert(Heap, 23, 1);
-    pq.insert(Heap, 19, 2);
-    pq.insert(Heap, 70, 3);
-    pq.insert(Heap, 39, 4);
-    pq.insert(Heap, 47, 5);
-    pq.insert(Heap, 49, 6);
+    pq.insert(Heap, 10, 10);
+    pq.insert(Heap, 20, 20);
+    pq.insert(Heap, 30, 30);
+    pq.insert(Heap, 40, 40);
+    pq.insert(Heap, 50, 50);
+    pq.insert(Heap, 60, 60);
 
     pq.extract_max(Heap);
 
-    pq.insert(Heap, 67, 8);
-    pq.insert(Heap, 90, 9);
-    pq.insert(Heap, 32, 12);
+
+    pq.extract_max(Heap);
+
+    pq.rootListprint(Heap);
+
+    pq.Delete(Heap , 60);
+
+    pq.find_max(Heap);
+
+    pq.is_empty(Heap);
+
+    pq.rootListprint(Heap);
+
+    pq.increase_key(Heap , 10 , 100);
 
     pq.extract_max(Heap);
 

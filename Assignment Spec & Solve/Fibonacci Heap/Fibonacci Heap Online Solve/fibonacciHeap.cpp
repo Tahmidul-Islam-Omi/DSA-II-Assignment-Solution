@@ -116,7 +116,7 @@ public:
         {
             H = H1;
         }
-        
+
         nodes += cnt;
     }
 
@@ -498,30 +498,3 @@ public:
         }
     }
 };
-
-// int main()
-// {
-//     FibonacciHeap<int, int> FH;
-//     FH.HeapInitialization();
-
-//     FH.insertion(23, 12);
-//     FH.insertion(17, 1);
-//     FH.insertion(10, 90);
-//     FH.insertion(12, 99);
-
-//     FH.Extract_max();
-
-//     FH.insertion(19, 2);
-
-//     FH.Extract_max();
-
-//     FH.insertion(20, 11);
-//     FH.insertion(21, 27);
-//     FH.insertion(29, 3);
-
-//     FH.Extract_max();
-
-//     FH.display();
-
-//     FH.DDisplay();
-// }
