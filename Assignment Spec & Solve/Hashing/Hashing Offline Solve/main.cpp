@@ -21,18 +21,14 @@ int main()
 {
     srand(time(NULL));
 
-    int HashTableSize =1000;
-    HashTable1 ht(HashTableSize);
+    int HashTableSize =20000;
+    int chainLength = 20;
+    HashTable1 ht(HashTableSize , chainLength);
 
-    for(int i=1; i<= HashTableSize-2; i++) {
+    for(int i=1; i<= HashTableSize; i++) {
         ht.insert(randomWordGenerator());
     }
 
-    ht.insert("Omi");
-    ht.insert("BUET");
-
-    ht.remove("Omi");
-
-    cout << ht.find("Omi") << endl;
-
+    cout << ht.getCollisonCount() << endl;
+    cout << ht.getAvgProbeCount() << endl;
 }
