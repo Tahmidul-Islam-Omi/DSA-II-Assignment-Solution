@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define seed2 127
+
 class HashTable1
 {
 private:
@@ -10,6 +12,7 @@ private:
     int collisonCount;
     int chainLength;
     int currSize;
+    int intialSize;
     int collisionResolutionMethod;
     vector<string> words;
 
@@ -22,7 +25,8 @@ public:
         ValueCount = 0;
         collisonCount = 0;
         currSize = 0;
-        collisionResolutionMethod = 3; // 1 for seperate chaining , 2 for double hashing , 3 for custom probing
+        intialSize = hashSize;
+        collisionResolutionMethod = 1; // 1 for seperate chaining , 2 for double hashing , 3 for custom probing
     }
 
     void setHashSize(int size)
@@ -48,7 +52,7 @@ public:
 
     double getAvgProbeCount()
     {
-        srand(time(NULL));
+        srand(seed2);
 
         int totalProbeCount = 0;
 
@@ -69,23 +73,23 @@ public:
             }
         }
 
-        return (double)totalProbeCount / words.size() * 0.1;
+        return (double)totalProbeCount / (words.size() * 0.1);
     }
 
-    //fnv1a hash function
+    // fnv1a hash function
 
-    unsigned int hashFunction(string str)
-    {
-        unsigned int hash = 2166136261; // FNV offset basis
-        // Iterate over each character in the string
-        for (char ch : str)
-        {
-            hash ^= ch;
-            hash *= 16777619; // FNV prime
-        }
-        // Return the hash value modulo hashSize
-        return hash % hashSize;
-    }
+    // unsigned int hashFunction(string str)
+    // {
+    //     unsigned int hash = 2166136261; // FNV offset basis
+    //     // Iterate over each character in the string
+    //     for (char ch : str)
+    //     {
+    //         hash ^= ch;
+    //         hash *= 16777619; // FNV prime
+    //     }
+    //     // Return the hash value modulo hashSize
+    //     return hash % hashSize;
+    // }
 
     // int hashFunction(string key)
     // {
@@ -97,17 +101,17 @@ public:
     //     return hashValue % hashSize;
     // }
 
-    // unsigned int hashFunction(string str)
-    // {
-    //     unsigned int hash = 5381;
+    unsigned int hashFunction(string str)
+    {
+        unsigned int hash = 5381;
 
-    //     for(char ch : str)
-    //     {
-    //         hash = ((hash << 5) + hash) + ch; // hash * 33 + c
-    //     }
+        for(char ch : str)
+        {
+            hash = ((hash << 5) + hash) + ch; // hash * 33 + c
+        }
 
-    //     return hash % hashSize;
-    // }
+        return hash % hashSize;
+    }
 
     unsigned int auxHash(string str)
     {
@@ -299,10 +303,10 @@ public:
             if (it->first == key)
             {
                 table[index].erase(it);
-                cout << "Removed Successfully" << endl;
+                //cout << "Removed Successfully" << endl;
                 currSize--;
 
-                if (currSize % 100 == 0 && currMaxChainLength() < 0.8 * chainLength)
+                if (currSize % 100 == 0 && currMaxChainLength() < 0.8 * chainLength && hashSize > intialSize)
                 {
                     Rehash("DeleteRehash");
                 }
@@ -312,6 +316,28 @@ public:
         }
 
         cout << "Oops! not found" << endl;
+    }
+
+    void deleteRehashTesting()
+    {
+
+        srand(time(NULL));
+
+        for (int i = 1; i <= words.size() / 2; i++)
+        {
+            int idx = rand() % words.size();
+
+            int index = hashFunction(words[idx]);
+
+            for (auto x : table[index])
+            {
+                if (x.first == words[idx])
+                {
+                    remove(x.first);
+                    break;
+                }
+            }
+        }
     }
 
     bool isPrime(long long num)
@@ -374,14 +400,14 @@ public:
 
             ResetcollisonCount();
 
-            //cout << "Hello2" << endl;
+            // cout << "Hello2" << endl;
 
             vector<list<pair<string, int>>> newtable = table;
             table.clear();
             setHashSize(newSize);
 
-            //cout << "Hello3" << endl;
-            //cout << "Size: " << newtable.size() << endl;
+            // cout << "Hello3" << endl;
+            // cout << "Size: " << newtable.size() << endl;
             ResetCurrSize();
 
             for (int i = 0; i < newtable.size(); i++)
@@ -389,17 +415,17 @@ public:
 
                 if (!newtable[i].empty())
                 {
-                    //cout << "in" << endl;
+                    // cout << "in" << endl;
                     for (auto it : newtable[i])
                     {
-                        //cout << "in2" << endl;
-                        //cout << it.first << " " << it.second << endl;
+                        // cout << "in2" << endl;
+                        // cout << it.first << " " << it.second << endl;
                         insertHelperSeperateChain(it.first, it.second);
                     }
                 }
             }
 
-            //cout << "Nice" << endl;
+            // cout << "Nice" << endl;
         }
 
         // deleteRehash
@@ -417,11 +443,16 @@ public:
 
             for (int i = 0; i < newtable.size(); i++)
             {
-                for (auto it : newtable[i])
+                if (!newtable[i].empty())
                 {
-                    insertHelperSeperateChain(it.first, it.second);
+                    for (auto it : newtable[i])
+                    {
+                        insertHelperSeperateChain(it.first, it.second);
+                    }
                 }
             }
+
+            cout << "After deleting:- " <<currSize << endl;
         }
 
         cout << "Rehashing is triggered" << endl;

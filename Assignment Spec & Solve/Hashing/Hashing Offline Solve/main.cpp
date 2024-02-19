@@ -1,5 +1,6 @@
 #include "hash.h"
 using namespace std;
+#define seed1 1010
 
 string randomWordGenerator() {
 
@@ -19,10 +20,10 @@ string randomWordGenerator() {
 
 int main()
 {
-    srand(time(NULL));
+    srand(seed1);
 
     int HashTableSize = 5000;
-    int chainLength = 5;
+    int chainLength = 10;
     HashTable1 ht(HashTableSize , chainLength);
 
     for(int i=1; i<= 10000; i++) {
@@ -32,4 +33,5 @@ int main()
 
     cout << ht.getCollisonCount() << endl;
     cout << ht.getAvgProbeCount() << endl;
+    //ht.deleteRehashTesting();
 }
