@@ -8,9 +8,10 @@ private:
     vector<list<pair<string, int>>> table;
     int ValueCount;
     int collisonCount;
-    int probeCount;
     int chainLength;
     int currSize;
+    int collisionResolutionMethod;
+    vector<string> words;
 
 public:
     HashTable1(int size, int chainLength)
@@ -21,12 +22,13 @@ public:
         ValueCount = 0;
         collisonCount = 0;
         currSize = 0;
-        probeCount = 1;
+        collisionResolutionMethod = 3; // 1 for seperate chaining , 2 for double hashing , 3 for custom probing
     }
 
     void setHashSize(int size)
     {
         this->hashSize = size;
+        table.resize(hashSize);
     }
 
     void ResetcollisonCount()
@@ -39,10 +41,6 @@ public:
         currSize = 0;
     }
 
-    void ResetProbeCount() {
-        probeCount = 1;
-    }
-
     int getCollisonCount()
     {
         return collisonCount;
@@ -50,35 +48,66 @@ public:
 
     double getAvgProbeCount()
     {
-        return (double)probeCount / (currSize );
+        srand(time(NULL));
+
+        int totalProbeCount = 0;
+
+        for (int i = 1; i <= words.size() * 0.1; i++)
+        {
+            int idx = rand() % words.size();
+
+            int index = hashFunction(words[idx]);
+
+            for (auto x : table[index])
+            {
+                if (x.first == words[idx])
+                {
+                    break;
+                }
+
+                totalProbeCount += 1;
+            }
+        }
+
+        return (double)totalProbeCount / words.size() * 0.1;
     }
 
-    // fnv1a hash function
-
-    // unsigned int hashFunction(string str)
-    // {
-    //     unsigned int hash = 2166136261; // FNV offset basis
-    //     // Iterate over each character in the string
-    //     for (char ch : str)
-    //     {
-    //         hash ^= ch;
-    //         hash *= 16777619; // FNV prime
-    //     }
-    //     // Return the hash value modulo hashSize
-    //     return hash % hashSize;
-    // }
+    //fnv1a hash function
 
     unsigned int hashFunction(string str)
     {
-        unsigned int hash = 5381;
-        
-        for(char ch : str)
+        unsigned int hash = 2166136261; // FNV offset basis
+        // Iterate over each character in the string
+        for (char ch : str)
         {
-            hash = ((hash << 5) + hash) + ch; // hash * 33 + c
+            hash ^= ch;
+            hash *= 16777619; // FNV prime
         }
-
+        // Return the hash value modulo hashSize
         return hash % hashSize;
     }
+
+    // int hashFunction(string key)
+    // {
+    //     int hashValue = 0;
+    //     for (int i = 0; i < key.length(); i++)
+    //     {
+    //         hashValue = abs(hashValue + (((key[i] - 97) * (int)powl(31, key.length() - i - 1)) % hashSize));
+    //     }
+    //     return hashValue % hashSize;
+    // }
+
+    // unsigned int hashFunction(string str)
+    // {
+    //     unsigned int hash = 5381;
+
+    //     for(char ch : str)
+    //     {
+    //         hash = ((hash << 5) + hash) + ch; // hash * 33 + c
+    //     }
+
+    //     return hash % hashSize;
+    // }
 
     unsigned int auxHash(string str)
     {
@@ -91,62 +120,61 @@ public:
     }
 
     // Separate chaining implementation
-    // void insertHelper(string key, int value)
-    // {
-    //     int index = hashFunction(key);
-    //     currSize++;
+    void insertHelperSeperateChain(string key, int value)
+    {
+        int index = hashFunction(key);
+        currSize++;
 
-    //     if (table[index].empty())
-    //     {
-    //         table[index].emplace_back(key, value);
-    //     }
+        if (table[index].empty())
+        {
+            table[index].emplace_back(key, value);
+        }
 
-    //     else
-    //     {
-    //         collisonCount++;
-    //         probeCount += table[index].size() - 1;
-    //         table[index].emplace_back(key, value);
-    //     }
+        else
+        {
+            collisonCount++;
+            table[index].emplace_back(key, value);
+        }
 
-    //     if (currSize % 100 == 0 && currMaxChainLength() > chainLength)
-    //     {
-    //         Rehash("insertRehash");
-    //     }
-    // }
+        if (currSize % 100 == 0 && currMaxChainLength() > chainLength)
+        {
+            Rehash("insertRehash");
+        }
+    }
 
     // Double Hashing Implementation
 
-    // void insertHelper(string key, int value)
-    // {
-    //     int index = hashFunction(key);
-    //     currSize++;
+    void insertHelperDoubleHash(string key, int value)
+    {
+        int index = hashFunction(key);
+        currSize++;
 
-    //     if (table[index].empty())
-    //     {
-    //         table[index].emplace_back(key, value);
-    //     }
+        if (table[index].empty())
+        {
+            table[index].emplace_back(key, value);
+        }
 
-    //     else
-    //     {
-    //         int index1 = auxHash(key);
-    //         index = doubleHash(index, index1);
-    //         collisonCount++;
+        else
+        {
+            int index1 = auxHash(key);
+            index = doubleHash(index, index1);
+            collisonCount++;
 
-    //         if (index != -1)
-    //         {
-    //             table[index].emplace_back(key, value);
-    //         }
-    //     }
+            if (index != -1)
+            {
+                table[index].emplace_back(key, value);
+            }
+        }
 
-    //     if (currSize % 100 == 0 && currMaxChainLength() > chainLength)
-    //     {
-    //         Rehash("insertRehash");
-    //     }
-    // }
+        if (currSize % 100 == 0 && currMaxChainLength() >= chainLength)
+        {
+            Rehash("insertRehash");
+        }
+    }
 
     // Custom probing Implementation
 
-    void insertHelper(string key, int value)
+    void insertHelperCustomProbing(string key, int value)
     {
         int index = hashFunction(key);
         currSize++;
@@ -178,36 +206,48 @@ public:
     {
 
         // Here i denotes probeCount
-        for (int i = 1; i <= 100; i++)
+        int i = 1;
+
+        while (1)
         {
+            if (i > hashSize)
+            {
+                return -1;
+            }
+
             int index = (k + 5 * i * k1 + 7 * i * i) % hashSize;
 
             if (table[index].empty())
             {
-                probeCount += i;
                 return index;
             }
-        }
 
-        return -1;
+            i++;
+        }
     }
 
     int doubleHash(int k, int k1)
     {
 
         // Here i denotes probeCount
-        for (int i = 1; i <= 100; i++)
+        int i = 1;
+
+        while (1)
         {
+            if (i > hashSize)
+            {
+                return -1;
+            }
+
             int index = (k + i * k1) % hashSize;
 
             if (table[index].empty())
             {
-                probeCount += i;
                 return index;
             }
-        }
 
-        return -1;
+            i++;
+        }
     }
 
     void insert(string key)
@@ -215,7 +255,22 @@ public:
         // Key doesn't exist, so add it
         if (find(key) == -1)
         {
-            insertHelper(key, ++ValueCount);
+            words.push_back(key);
+            switch (collisionResolutionMethod)
+            {
+            case 1:
+                insertHelperSeperateChain(key, ++ValueCount);
+                break;
+            case 2:
+                insertHelperDoubleHash(key, ++ValueCount);
+                break;
+            case 3:
+                insertHelperCustomProbing(key, ++ValueCount);
+                break;
+
+            default:
+                break;
+            }
         }
     }
 
@@ -307,59 +362,77 @@ public:
         cout << "----------------------------------------------------------------" << endl;
         cout << "Rehashing is triggered" << endl;
         cout << "Average Probe Count: " << getAvgProbeCount() << endl;
-        cout << "Load Factor:- " << currSize / hashSize << endl;
+        cout << "Load Factor:- " << (double)currSize / hashSize << endl;
         cout << "Maximum Chain Length: " << currMaxChainLength() << endl;
         cout << "----------------------------------------------------------------" << endl;
 
         // insertRehash
         if (str == "insertRehash")
         {
+            // << "Hello1" << endl;
             int newSize = nextPrime(2 * hashSize);
-            setHashSize(newSize);
 
             ResetcollisonCount();
-            ResetCurrSize();
-            ResetProbeCount();
+
+            //cout << "Hello2" << endl;
 
             vector<list<pair<string, int>>> newtable = table;
             table.clear();
+            setHashSize(newSize);
+
+            //cout << "Hello3" << endl;
+            //cout << "Size: " << newtable.size() << endl;
+            ResetCurrSize();
 
             for (int i = 0; i < newtable.size(); i++)
             {
-                for (auto it : newtable[i])
+
+                if (!newtable[i].empty())
                 {
-                    insertHelper(it.first, it.second);
+                    //cout << "in" << endl;
+                    for (auto it : newtable[i])
+                    {
+                        //cout << "in2" << endl;
+                        //cout << it.first << " " << it.second << endl;
+                        insertHelperSeperateChain(it.first, it.second);
+                    }
                 }
             }
+
+            //cout << "Nice" << endl;
         }
 
         // deleteRehash
         else
         {
             int newSize = nextPrime(hashSize / 2);
-            setHashSize(newSize);
 
             ResetcollisonCount();
-            ResetCurrSize();
 
             vector<list<pair<string, int>>> newtable = table;
             table.clear();
+
+            setHashSize(newSize);
+            ResetCurrSize();
 
             for (int i = 0; i < newtable.size(); i++)
             {
                 for (auto it : newtable[i])
                 {
-                    insertHelper(it.first, it.second);
+                    insertHelperSeperateChain(it.first, it.second);
                 }
             }
         }
 
-        cout << "----------------------------------------------------------------" << endl;
         cout << "Rehashing is triggered" << endl;
         cout << "Average Probe Count: " << getAvgProbeCount() << endl;
-        cout << "Load Factor:- " << currSize / hashSize << endl;
+        cout << "Load Factor:- " << (double)currSize / (double)hashSize << endl;
         cout << "Maximum Chain Length: " << currMaxChainLength() << endl;
         cout << "----------------------------------------------------------------" << endl;
+
+        cout << endl;
+        cout << endl;
+        cout << endl;
     }
 
     int currMaxChainLength()

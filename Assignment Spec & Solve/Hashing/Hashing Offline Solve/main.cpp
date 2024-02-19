@@ -21,12 +21,13 @@ int main()
 {
     srand(time(NULL));
 
-    int HashTableSize =20000;
-    int chainLength = 20;
+    int HashTableSize = 5000;
+    int chainLength = 5;
     HashTable1 ht(HashTableSize , chainLength);
 
-    for(int i=1; i<= HashTableSize; i++) {
-        ht.insert(randomWordGenerator());
+    for(int i=1; i<= 10000; i++) {
+        string word = randomWordGenerator();
+        ht.insert(word);
     }
 
     cout << ht.getCollisonCount() << endl;
