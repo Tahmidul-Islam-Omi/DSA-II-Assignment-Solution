@@ -2,16 +2,11 @@
 
 using namespace std;
 
-void knapSack_Solve(int n, int w , int maxValue, vector<int> weight, vector<int> value)
+void knapSack_Solve(int n, int w , double maxValue, vector<int> weight, vector<int> value)
 {
 
     vector<vector<int>> dp(n + 1, vector<int>(maxValue + 1 , 10000));
 
-    for (int v = 0; v <= maxValue; v++)
-    {
-        //cout << v << " " << dp[n][v] << endl;
-        //std::cout << v << " " << dp[n][v] << std::endl;
-    }
 
     std::cout << std::endl;
     std::cout << std::endl;
@@ -55,8 +50,8 @@ void knapSack_Solve(int n, int w , int maxValue, vector<int> weight, vector<int>
         }
     }
 
-    int ans = 0;
-    int Used_Weight = 0;
+    double ans = 0;
+    double Used_Weight = 0;
 
     for (int v = 0; v <= maxValue; v++)
     {
@@ -94,27 +89,22 @@ int main()
 
     std::cout << "Bye" << endl;
 
-    int eps = 0.5;
+    double eps = 0.5;
 
     int Vmax = maxValue / n;
 
-    int theta = (eps * Vmax / 2 * n);
+
+    double a = (eps * Vmax);
+
+    double theta = double( (eps * Vmax) / (2 * n));
+    cout << theta << endl;
 
     for (int i = 1; i <= n; i++)
     {
-        value[i] = value[i] / theta;
+        value[i] = ceil ( (double)value[i] / (double)theta);
     }
 
     knapSack_Solve(n, w, Vmax , weight, value);
-    cout << "Bye "
-
-    for (int i = 1; i <= n; i++)
-    {
-        value[i] = ceil(value[i]);
-    }
-
-    knapSack_Solve(n, w, Vmax, weight, value);
-
 
     return 0;
 }
