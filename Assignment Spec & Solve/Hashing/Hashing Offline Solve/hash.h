@@ -105,7 +105,7 @@ public:
     {
         unsigned int hash = 5381;
 
-        for(char ch : str)
+        for (char ch : str)
         {
             hash = ((hash << 5) + hash) + ch; // hash * 33 + c
         }
@@ -254,7 +254,7 @@ public:
         }
     }
 
-    void insert(string key)
+    void insert(string key, int value)
     {
         // Key doesn't exist, so add it
         if (find(key) == -1)
@@ -263,17 +263,38 @@ public:
             switch (collisionResolutionMethod)
             {
             case 1:
-                insertHelperSeperateChain(key, ++ValueCount);
+                insertHelperSeperateChain(key, value);
                 break;
             case 2:
-                insertHelperDoubleHash(key, ++ValueCount);
+                insertHelperDoubleHash(key, value);
                 break;
             case 3:
-                insertHelperCustomProbing(key, ++ValueCount);
+                insertHelperCustomProbing(key, value);
                 break;
 
             default:
                 break;
+            }
+        }
+
+        else
+        {
+            int value = remove(key);
+            insertHelperSeperateChain(key, ++value);
+        }
+    }
+
+    void print()
+    {
+        for (int i = 0; i < hashSize; i++)
+        {
+            if (!table[i].empty())
+            {
+
+                for (auto x : table[i])
+                {
+                    cout << x.first << " " << x.second << endl;
+                }
             }
         }
     }
@@ -294,7 +315,7 @@ public:
         return -1; // key not found so return -1
     }
 
-    void remove(string key)
+    int remove(string key)
     {
         int index = hashFunction(key);
 
@@ -302,8 +323,9 @@ public:
         {
             if (it->first == key)
             {
+                int value = it->second;
                 table[index].erase(it);
-                //cout << "Removed Successfully" << endl;
+                // cout << "Removed Successfully" << endl;
                 currSize--;
 
                 if (currSize % 100 == 0 && currMaxChainLength() < 0.8 * chainLength && hashSize > intialSize)
@@ -311,7 +333,7 @@ public:
                     Rehash("DeleteRehash");
                 }
 
-                return;
+                return value;
             }
         }
 
@@ -452,7 +474,7 @@ public:
                 }
             }
 
-            cout << "After deleting:- " <<currSize << endl;
+            cout << "After deleting:- " << currSize << endl;
         }
 
         cout << "Rehashing is triggered" << endl;
